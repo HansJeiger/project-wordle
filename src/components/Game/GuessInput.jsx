@@ -1,6 +1,16 @@
 import React from "react";
+import { getLetterStatusStyling } from "./GuessGrid";
+import { range } from "../../utils";
 
-const GuessInput = () => {
+const GuessInput = ({
+  gameState,
+  updateGameState,
+  answer,
+  guessesArray,
+  setGuessesArray,
+  letterStatuses,
+  setLetterStatuses,
+}) => {
   const [guess, setGuess] = React.useState("");
   const [triedInvalidGuess, setTriedInvalidGuess] = React.useState(false);
   const [timeoutId, setTimeoutId] = React.useState();
@@ -13,14 +23,15 @@ const GuessInput = () => {
   }
 
   const onChangeHandler = async (event) => {
+    if (gameState !== "ongoing") return;
     if (event.target.value.length > 5) {
-      displayInputWarning("Invalid guess! Only 5 letters are allowed.");
+      displayInputWarning("Only 5 letters are allowed.");
       return;
     }
     const newValue = event.target.value.toUpperCase().slice(0, 5);
     const newValueArray = newValue.split("");
     if (newValueArray.length > 0 && !/^[a-zA-Z]+$/.test(newValue)) {
-      displayInputWarning("Invalid guess! Only letters are allowed.");
+      displayInputWarning("Only letters are allowed.");
       return;
     }
     if (
@@ -32,21 +43,87 @@ const GuessInput = () => {
         );
       })
     ) {
-      displayInputWarning(
-        "Invalid guess! Any character can only be used once."
-      );
+      displayInputWarning("Any character can only be used once.");
       return;
     }
     setTriedInvalidGuess(false);
     setGuess(newValue);
   };
 
+  const onSubmitHandler = (event) => {
+    event.preventDefault();
+    if (guess.length < 5) {
+      displayInputWarning("Your guess must contain 5 letters!");
+      return;
+    }
+    setGuessesArray([...guessesArray, { guess, id: crypto.randomUUID() }]);
+    updateLetterStatuses(guess, answer);
+    setGuess(
+      guess === answer ? answer : guessesArray.length >= 5 ? "LOSER" : ""
+    );
+    updateGameState(guess);
+  };
+
+  const updateLetterStatuses = (guess, answer) => {
+    const guessLetterArray = guess.split("");
+    const answerLetterArray = answer.split("");
+
+    const newLetterStatuses = guessLetterArray.map((letter, index) => {
+      const answerLetterIndex = answerLetterArray.findIndex(
+        (answerLetter) => letter === answerLetter
+      );
+      const letterPlacement =
+        index === answerLetterIndex || answerLetterIndex === -1
+          ? answerLetterIndex
+          : "misplaced";
+      return { letter, letterPlacement };
+    });
+
+    const updatedLetterStatuses = [...letterStatuses];
+
+    newLetterStatuses.forEach((newLetterStatus) => {
+      const oldLetterStatusIndex = updatedLetterStatuses.findIndex(
+        (letterStatus) => newLetterStatus.letter === letterStatus.letter
+      );
+      if (oldLetterStatusIndex === -1)
+        updatedLetterStatuses.push(newLetterStatus);
+      if (
+        updatedLetterStatuses[oldLetterStatusIndex]?.letterPlacement !==
+        "misplaced"
+      )
+        return;
+      else updatedLetterStatuses[oldLetterStatusIndex] = newLetterStatus;
+    });
+
+    setLetterStatuses(updatedLetterStatuses);
+  };
+
   return (
     <>
-      <form className="guess-input-wrapper">
+      <div>
+        <p className="guess">
+          {range(5).map((letterIndex) => (
+            <span
+              key={letterIndex}
+              className={`cell ${getLetterStatusStyling(
+                guess.charAt(letterIndex),
+                letterIndex,
+                letterStatuses,
+                gameState
+              )}`}
+            >
+              {guess.charAt(letterIndex)}
+            </span>
+          ))}
+        </p>
+      </div>
+      <form
+        onSubmit={(event) => onSubmitHandler(event)}
+        className="guess-input-wrapper"
+      >
         <label htmlFor="guess-input"></label>
         <input
-          value={guess}
+          value={gameState === "ongoing" ? guess : answer}
           onChange={onChangeHandler}
           id="guess-input"
           tye="text"
