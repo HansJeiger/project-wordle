@@ -78,7 +78,7 @@ h1 {
   flex-direction: column;
   gap: var(--game-spacing);
   padding: var(--game-spacing) 32px;
-  margin: 0 auto;
+  margin: 0 auto 12rem auto;
   min-width: 250px;
   max-width: min(500px, 58vh, 100%);
 }
@@ -105,6 +105,19 @@ h1 {
   border: 2px solid var(--color-gray-700);
   border-radius: var(--radius);
   font-size: 2rem;
+}
+
+.keyboard-cell {
+  position: relative;
+  width: 9%;
+  display: grid;
+  place-content: center;
+  margin: 1px;
+  background: white;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--color-gray-700);
+  border-radius: 5px;
+  font-size: 1rem;
 }
 
 /*
@@ -145,6 +158,22 @@ h1 {
   color: white;
 }
 
+.keyboard-cell.correct {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: white;
+}
+.keyboard-cell.incorrect {
+  background: var(--color-gray-300);
+  border-color: var(--color-gray-300);
+  color: white;
+}
+.keyboard-cell.misplaced {
+  background: var(--color-warning);
+  border-color: var(--color-warning);
+  color: white;
+}
+
 .guess-input-wrapper {
   display: flex;
   flex-direction: column;
@@ -156,7 +185,7 @@ h1 {
   font-size: 1.25rem;
 }
 
-.guess-input-wrapper input {
+.guess-input-wrapper input[type="text"] {
   display: block;
   width: 100%;
   font-size: 2rem;
@@ -199,6 +228,13 @@ h1 {
   margin: -1px;
   padding: 0;
   border: 0;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
 }
 
 /*

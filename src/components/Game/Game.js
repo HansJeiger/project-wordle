@@ -4,6 +4,7 @@ import { sample } from "../../utils";
 import { WORDS } from "../../data";
 import GuessInput from "./GuessInput";
 import GuessGrid from "./GuessGrid";
+import KeyboardDisplay from "./KeyboardDisplay";
 
 // Pick a random word on every pageload.
 const answer = sample(WORDS);
@@ -39,6 +40,49 @@ function Game() {
         letterStatuses={letterStatuses}
         setLetterStatuses={setLetterStatuses}
       />
+      {gameState === "won" && (
+        <div className="happy banner">
+          <p>
+            <strong>Congratulations!</strong> Got it in
+            <strong> {guessesArray.length} guesses</strong>.
+          </p>
+          <button
+            style={{
+              fontSize: "1.5rem",
+              borderRadius: "40px",
+              marginTop: "1rem",
+              border: "5px solid white",
+              padding: "0.5rem 1rem",
+            }}
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            New game
+          </button>
+        </div>
+      )}
+      {gameState === "lost" && (
+        <div className="sad banner">
+          <p>
+            Sorry, the correct answer is <strong>{answer}</strong>.
+          </p>
+          <button
+            style={{
+              fontSize: "1.5rem",
+              borderRadius: "40px",
+              marginTop: "1rem",
+              border: "5px solid white",
+              padding: "0.5rem 1rem",
+            }}
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            New game
+          </button>
+        </div>
+      )}
     </>
   );
 }

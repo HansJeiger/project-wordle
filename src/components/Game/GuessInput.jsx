@@ -1,6 +1,7 @@
 import React from "react";
 import { getLetterStatusStyling } from "./GuessGrid";
 import { range } from "../../utils";
+import KeyboardDisplay from "./KeyboardDisplay";
 
 const GuessInput = ({
   gameState,
@@ -52,6 +53,8 @@ const GuessInput = ({
 
   const onSubmitHandler = (event) => {
     event.preventDefault();
+    console.log(guess);
+    if (gameState !== "ongoing") return;
     if (guess.length < 5) {
       displayInputWarning("Your guess must contain 5 letters!");
       return;
@@ -98,6 +101,23 @@ const GuessInput = ({
     setLetterStatuses(updatedLetterStatuses);
   };
 
+  const letterInput = (letter) => {
+    console.log("what");
+    const input = document.getElementById("guess-input");
+    let value;
+    if (letter === "←") value = guess.slice(0, guess.length - 1);
+    else value = guess + letter;
+
+    let lastValue = input.value;
+    input.value = value;
+    let event = new Event("input", { target: input, bubbles: true });
+    let tracker = input._valueTracker;
+    if (tracker) {
+      tracker.setValue(lastValue);
+    }
+    input.dispatchEvent(event);
+  };
+
   return (
     <>
       <div>
@@ -122,15 +142,21 @@ const GuessInput = ({
         className="guess-input-wrapper"
       >
         <label htmlFor="guess-input"></label>
-        <input
-          value={gameState === "ongoing" ? guess : answer}
-          onChange={onChangeHandler}
-          id="guess-input"
-          tye="text"
-        />
+        <div className={"flex-row"}>
+          <input
+            value={gameState === "ongoing" ? guess : answer}
+            onChange={onChangeHandler}
+            id="guess-input"
+            type="text"
+          />
+        </div>
         {triedInvalidGuess && (
           <p style={{ color: "#C32222" }}>{triedInvalidGuess}</p>
         )}
+        <KeyboardDisplay
+          letterStatuses={letterStatuses}
+          letterInput={letterInput}
+        />
       </form>
     </>
   );
