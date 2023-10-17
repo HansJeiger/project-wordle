@@ -1,10 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import { sample } from "../../utils";
 import { WORDS } from "../../data";
 import GuessInput from "./GuessInput";
 import GuessGrid from "./GuessGrid";
-import KeyboardDisplay from "./KeyboardDisplay";
 
 // Pick a random word on every pageload.
 const answer = sample(WORDS);

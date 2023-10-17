@@ -52,5 +52,4 @@ const KeyboardDisplay = ({ letterStatuses, letterInput }) => {
     </div>
   );
 };
-
 export default KeyboardDisplay;
